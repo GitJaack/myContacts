@@ -1,6 +1,11 @@
 const express = require("express");
-const Contact = require("../models/contactModel");
 const requireAuth = require("../middlewares/authMiddleware");
+const {
+  getContacts,
+  postContact,
+  patchContact,
+  removeContact,
+} = require("../controllers/contactController");
 
 const router = express.Router();
 
@@ -57,14 +62,7 @@ router.use(requireAuth);
  *       500:
  *         description: Erreur serveur
  */
-router.get("/", async (req, res) => {
-  try {
-    const contacts = await Contact.find({ userId: req.user.id });
-    res.json(contacts);
-  } catch (err) {
-    res.status(500).json({ message: "Server error", error: err.message });
-  }
-});
+router.get("/", getContacts);
 
 /**
  * @swagger
@@ -104,30 +102,7 @@ router.get("/", async (req, res) => {
  *       400:
  *         description: Erreur de validation
  */
-router.post("/", async (req, res) => {
-  try {
-    const { firstName, lastName, phone } = req.body;
-    const existingContact = await Contact.findOne({
-      phone,
-      userId: req.user.id,
-    });
-    if (existingContact) {
-      return res
-        .status(400)
-        .json({ message: "Ce numéro existe déjà dans vos contacts." });
-    }
-    const contact = new Contact({
-      firstName,
-      lastName,
-      phone,
-      userId: req.user.id,
-    });
-    await contact.save();
-    res.status(201).json(contact);
-  } catch (err) {
-    res.status(400).json({ message: "Validation error", error: err.message });
-  }
-});
+router.post("/", postContact);
 
 /**
  * @swagger
@@ -169,21 +144,7 @@ router.post("/", async (req, res) => {
  *       404:
  *         description: Contact non trouvé
  */
-router.patch("/:id", async (req, res) => {
-  try {
-    const contact = await Contact.findOneAndUpdate(
-      { _id: req.params.id, userId: req.user.id },
-      req.body,
-      { new: true, runValidators: true }
-    );
-    if (!contact) {
-      return res.status(404).json({ message: "Contact not found" });
-    }
-    res.json(contact);
-  } catch (err) {
-    res.status(400).json({ message: "Validation error", error: err.message });
-  }
-});
+router.patch("/:id", patchContact);
 
 /**
  * @swagger
@@ -208,19 +169,6 @@ router.patch("/:id", async (req, res) => {
  *       500:
  *         description: Erreur serveur
  */
-router.delete("/:id", async (req, res) => {
-  try {
-    const contact = await Contact.findOneAndDelete({
-      _id: req.params.id,
-      userId: req.user.id,
-    });
-    if (!contact) {
-      return res.status(404).json({ message: "Contact not found" });
-    }
-    res.json({ message: "Contact deleted" });
-  } catch (err) {
-    res.status(500).json({ message: "Server error", error: err.message });
-  }
-});
+router.delete("/:id", removeContact);
 
 module.exports = router;
