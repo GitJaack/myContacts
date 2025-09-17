@@ -21,7 +21,7 @@ const swaggerOptions = {
     security: [{ bearerAuth: [] }],
     servers: [
       {
-        url: "http://localhost:3001",
+        url: ["http://localhost:3001", "https://mycontacts-9gnn.onrender.com"],
       },
     ],
   },
