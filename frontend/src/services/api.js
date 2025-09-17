@@ -1,11 +1,13 @@
 const API_URL = process.env.REACT_APP_API_URL || "http://localhost:3001";
+const BASE_URL = API_URL.replace(/\/+$/, "");
 
 async function apiRequest(path, { method = "GET", body, token } = {}) {
   const headers = { "Content-Type": "application/json" };
   const authToken = token || localStorage.getItem("token");
   if (authToken) headers["Authorization"] = `Bearer ${authToken}`;
 
-  const response = await fetch(`${API_URL}${path}`, {
+  const normalizedPath = path.startsWith("/") ? path : `/${path}`;
+  const response = await fetch(`${BASE_URL}${normalizedPath}`, {
     method,
     headers,
     body: body ? JSON.stringify(body) : undefined,
