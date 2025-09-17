@@ -1,11 +1,11 @@
 const cors = require("cors");
 
-const allowedOrigin = [
-  "http://localhost:3000",
-  "https://mycontacts-9gnn.onrender.com",
-];
+// const allowedOrigin = [
+//   "http://localhost:3000",
+//   "https://mycontacts-9gnn.onrender.com",
+// ];
 const corsOptions = {
-  origin: allowedOrigin,
+  origin: true,
   methods: ["GET", "POST", "PATCH", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"],
 };
